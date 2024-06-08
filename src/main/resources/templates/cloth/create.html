@@ -16,7 +16,6 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             padding: 30px;
         }
-
     </style>
 </head>
 <body>
@@ -34,8 +33,14 @@
 
                 <div class="mb-3">
                     <label for="price" class="form-label">Cloth Price:</label>
-                    <input type="text" class="form-control" id="price" th:field="*{price}" required>
-                    <div class="invalid-feedback">Please enter a price.</div>
+                    <input type="text" class="form-control" id="price" th:field="*{price}" required oninput="validatePrice(this)">
+                    <div class="invalid-feedback">Please enter a valid price.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">Cloth Quantity:</label>
+                    <input type="number" class="form-control" id="quantity" th:field="*{quantity}" value="1" min="1" required>
+                    <div class="invalid-feedback">Please enter a quantity (minimum 1).</div>
                 </div>
 
                 <div class="mb-3">
@@ -63,10 +68,8 @@
     (function () {
         'use strict';
 
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
         var forms = document.querySelectorAll('.needs-validation');
 
-        // Loop over them and prevent submission
         Array.from(forms).forEach(function (form) {
             form.addEventListener('submit', function (event) {
                 if (!form.checkValidity()) {
@@ -78,6 +81,10 @@
             }, false);
         });
     })();
+
+    function validatePrice(input) {
+        input.value = input.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');
+    }
 </script>
 </body>
 </html>

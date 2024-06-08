@@ -16,52 +16,41 @@ import java.util.List;
 public class CategoryController {
     @Autowired
     private CategoryService categoryservice;
+
     @GetMapping
     public String viewAllCategory(Model model) {
         List<Category> listCategory = categoryservice.listAll();
-        model.addAttribute("categories",listCategory);
+        model.addAttribute("categories", listCategory);
         return "category/index";
-
     }
-
-    @Autowired
-    private ClothServices services;
-
 
     @GetMapping("/create")
     public String showNewCategoryPage(Model model) {
         Category category = new Category();
-        model.addAttribute("category",category);
-        //model.addAttribute("books",services.listAll());
+        model.addAttribute("category", category);
         return "category/create";
     }
+
     @PostMapping("/save")
-    public String saveCategory(@ModelAttribute("category")Category category) {
+    public String saveCategory(@ModelAttribute("category") Category category) {
         categoryservice.save(category);
         return "redirect:/categories";
-
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditCAtegoryPage(@PathVariable("id")Long id, Model model) {
+    public String showEditCategoryPage(@PathVariable("id") Long id, Model model) {
         Category category = categoryservice.get(id);
-        if(category==null) {
+        if (category == null) {
             return "notfound";
         } else {
-            model.addAttribute("categories", categoryservice.listAll());
-            model.addAttribute("category",category);
+            model.addAttribute("category", category);
             return "category/edit";
         }
     }
 
     @GetMapping("/delete/{id}")
-    public String deletecategory(@PathVariable("id")Long id) {
-        Category category = categoryservice.get(id);
-        if(category==null) {
-            return "notfound";
-        } else {
-            categoryservice.delete(id);
-            return "redirect:/categories";
-        }
+    public String deleteCategory(@PathVariable("id") Long id) {
+        categoryservice.delete(id);
+        return "redirect:/categories";
     }
 }

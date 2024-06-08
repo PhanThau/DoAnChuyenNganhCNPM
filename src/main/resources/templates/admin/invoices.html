@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Manage Invoices</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .table-container {
+      margin: 20px auto;
+      max-width: 1200px;
+    }
+    .table th, .table td {
+      text-align: center;
+    }
+    .btn-status {
+      margin: 5px;
+    }
+    .filter-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+<header th:insert="layouts/fragment.html :: header"></header>
+<div class="separator-line" style="border-top: 1px solid #ddd;
+            margin-top: 20px;
+            margin-bottom: 20px;">
+</div>
+<div class="container table-container">
+  <h1 class="my-4 text-center">Danh sách các đơn hàng</h1>
+
+  <div class="filter-container">
+    <label for="statusFilter" class="me-2">Filter by Status:</label>
+    <select id="statusFilter" class="form-select" style="width: 200px;">
+      <option value="ALL">All</option>
+      <option value="PENDING">Chờ xác nhận</option>
+      <option value="Đang Vận Chuyển">Đang Vận Chuyển</option>
+      <option value="Đã Giao Hàng">Đã giao hàng</option>
+    </select>
+  </div>
+
+  <div class="statistics-container text-center mb-4">
+    <h2>Thống kê doanh thu</h2>
+    <p>Doanh thu hôm nay: <span th:text="${totalRevenueToday}"></span> VND</p>
+    <p>Doanh thu tuần này: <span th:text="${totalRevenueThisWeek}"></span> VND</p>
+    <p>Doanh thu tháng này: <span th:text="${totalRevenueThisMonth}"></span> VND</p>
+  </div>
+
+  <table class="table table-striped table-hover mx-auto">
+    <thead class="table-dark">
+    <tr>
+      <th>Invoice ID</th>
+      <th>User ID</th>
+      <th>Date</th>
+      <th>Total Price</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="invoiceTableBody">
+    <tr th:each="invoice : ${invoices}" th:data-status="${invoice.status}">
+      <td th:text="${invoice.id}"></td>
+      <td th:text="${invoice.user.id}"></td>
+      <td th:text="${invoice.invoiceDate}"></td>
+      <td th:text="${invoice.price}"></td>
+      <td>
+          <span th:switch="${invoice.status}">
+            <span th:case="'PENDING'">Chờ xác nhận</span>
+            <span th:case="'Đang Vận Chuyển'">Đang Vận Chuyển</span>
+            <span th:case="'Đã Giao Hàng'">Đã giao hàng</span>
+          </span>
+      </td>
+      <td>
+        <button class="btn btn-warning btn-status" data-bs-toggle="modal" data-bs-target="#confirmModal" th:data-invoice-id="${invoice.id}" th:data-status="'Đang Vận Chuyển'">Xác nhận đang vận chuyển</button>
+        <button class="btn btn-success btn-status" data-bs-toggle="modal" data-bs-target="#confirmModal" th:data-invoice-id="${invoice.id}" th:data-status="'Đã Giao Hàng'">Xác nhận đã giao</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Confirm Status Update</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to update the status to <strong id="modalStatusText"></strong> for invoice ID <strong id="modalInvoiceId"></strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form id="updateForm" method="post">
+          <button type="submit" class="btn btn-primary">Confirm</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var confirmModal = document.getElementById('confirmModal');
+    confirmModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var invoiceId = button.getAttribute('data-invoice-id');
+      var status = button.getAttribute('data-status');
+
+      var modalInvoiceId = confirmModal.querySelector('#modalInvoiceId');
+      var modalStatusText = confirmModal.querySelector('#modalStatusText');
+      var updateForm = confirmModal.querySelector('#updateForm');
+
+      modalInvoiceId.textContent = invoiceId;
+      modalStatusText.textContent = status;
+      updateForm.setAttribute('action', `/cart/admin/updateInvoiceStatus/${invoiceId}/${status}`);
+    });
+
+    var statusFilter = document.getElementById('statusFilter');
+    statusFilter.addEventListener('change', function () {
+      var selectedStatus = this.value;
+      var rows = document.querySelectorAll('#invoiceTableBody tr');
+      rows.forEach(function (row) {
+        var status = row.getAttribute('data-status');
+        if (selectedStatus === 'ALL' || status === selectedStatus) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
+<footer th:replace="layouts/footer.html :: footer"></footer>
+</body>
+</html>

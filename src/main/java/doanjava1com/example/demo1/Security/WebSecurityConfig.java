@@ -10,12 +10,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import doanjava1com.example.demo1.Services.UserDetailsServicelmpl;
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
     String arrPermitAll[]= new String[] {"/webjars/**","/","/verify"};
+
     @Bean
     protected BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -34,7 +33,6 @@ public class WebSecurityConfig {
         return authProvider;
     }
 
-
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         System.out.println("filter");
@@ -43,17 +41,20 @@ public class WebSecurityConfig {
                         .antMatchers("/").permitAll()
                         .antMatchers("/register").permitAll()
                         .antMatchers("/process_register").permitAll()
+                        .antMatchers("/users/profile").authenticated()
                         .antMatchers("/users/**").permitAll()
                         .antMatchers("/forgot_password").permitAll()
                         .antMatchers("/reset_password").permitAll()
                         .antMatchers("/API/**").permitAll()
-                        .antMatchers("/clothes/").hasAnyAuthority("USER", "CREATER", "EDITOR", "ADMIN")
-                        .antMatchers("/clothes/new").hasAnyAuthority("ADMIN", "CREATER")
-                        .antMatchers("/clothes/edit/**").hasAnyAuthority("ADMIN", "EDITOR")
-                        .antMatchers("/clothes/delete/**")
-                        .hasAuthority("ADMIN").anyRequest().authenticated())
-                .formLogin(login -> login.loginPage("/login").permitAll()).logout(logout -> logout.permitAll())
-                .exceptionHandling(handling -> handling.accessDeniedPage("/403")).csrf().disable();
+                        .antMatchers("/clothes/").hasAnyAuthority("USER", "ADMIN")
+                        .antMatchers("/clothes/new").hasAnyAuthority("ADMIN")
+                        .antMatchers("/clothes/edit/**").hasAnyAuthority("ADMIN")
+                        .antMatchers("/clothes/delete/**").hasAuthority("ADMIN")
+                        .anyRequest().authenticated())
+                .formLogin(login -> login.loginPage("/login").permitAll())
+                .logout(logout -> logout.permitAll())
+                .exceptionHandling(handling -> handling.accessDeniedPage("/403"))
+                .csrf().disable();
         return http.build();
     }
 }

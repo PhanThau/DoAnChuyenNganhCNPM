@@ -2,46 +2,76 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
-
 <head>
     <meta charset="UTF-8">
     <title>Category List</title>
-    <title>Create New Book</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .table-container {
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        .table th, .table td {
+            text-align: center;
+        }
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+    </style>
 </head>
 <body>
 <header th:insert="layouts/fragment.html :: header"></header>
-<div align="center" class="container">
-    <h1>Category List</h1>
-    <div sec:authorize="hasAnyAuthority('CREATER','ADMIN')">
-        <a href="categories/create">Create New Category</a><br/><br/>
-    </div>
-    <a href="clothes">Trang Chủ</a><br/><br/>
-    <table border="1" class="table table-striped table table-hover table-bordered">
-        <thead>
-        <tr>
-            <th>Category ID</th>
-            <th>Description</th>
-            <th>Name</th>
-
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="category : ${categories}">
-            <td th:text="${category.id}">Category ID</td>
-            <td th:text="${category.description}">Description</td>
-            <td th:text="${category.name}">Name</td>
-            <td>
-                <div sec:authorize="hasAnyAuthority('EDITOR','ADMIN')">
-                    <a th:href="@{'/categories/edit/'+${category.id}}">Edit</a></div>
-                <div sec:authorize="hasAnyAuthority('ADMIN')">
-                    <a th:href="@{'/categories/delete/'+${category.id}}">Delete</a></div></td>
-        </tr>
-        </tbody>
-
-    </table>
+<div class="separator-line" style="border-top: 1px solid #ddd;
+            margin-top: 20px;
+            margin-bottom: 20px;">
 </div>
-
+<div class="container">
+    <h1 class="text-center my-4">Loại sản phẩm</h1>
+    <div class="d-flex justify-content-center mb-4" sec:authorize="hasAnyAuthority('CREATER','ADMIN')">
+        <a href="categories/create" class="btn btn-primary">Create New Category</a>
+    </div>
+    <div class="d-flex justify-content-center mb-4">
+        <a href="clothes" class="btn btn-secondary">Trang Chủ</a>
+    </div>
+    <div class="table-container">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th>Category ID</th>
+                <th>Description</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="category : ${categories}">
+                <td th:text="${category.id}">Category ID</td>
+                <td th:text="${category.description}">Description</td>
+                <td th:text="${category.name}">Name</td>
+                <td>
+                    <div class="actions">
+                        <div sec:authorize="hasAnyAuthority('EDITOR','ADMIN')">
+                            <a th:href="@{'/categories/edit/'+${category.id}}" class="btn btn-warning">Edit</a>
+                        </div>
+                        <div sec:authorize="hasAnyAuthority('ADMIN')">
+                            <a th:href="@{'/categories/delete/'+${category.id}}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this category?')">Delete</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<footer th:replace="layouts/footer.html :: footer"></footer>
 </body>
 </html>

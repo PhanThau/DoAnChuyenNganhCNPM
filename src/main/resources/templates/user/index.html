@@ -4,57 +4,91 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
   <meta charset="utf-8">
-  <title>USER LIST</title>
+  <title>User Management</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .table-container {
+      margin: 20px auto;
+      max-width: 1200px;
+    }
+    .table th, .table td {
+      text-align: center;
+    }
+    .btn-role {
+      margin: 2px;
+    }
+    .filter-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
 <header th:insert="layouts/fragment.html :: header"></header>
-<div align="center" class="container">
-  <h1>User List</h1>
-  <div sec:authorize="hasAnyAuthority('CREATER','ADMIN')">
-    <a href="users/new">Create New User</a><br/><br/>
-  </div>
-  <a href="categories">Category</a><br/><br/>
-  <table border="1" class="table table-striped table table-hover table-bordered">
-    <thead>
+<div class="separator-line" style="border-top: 1px solid #ddd;
+            margin-top: 20px;
+            margin-bottom: 20px;">
+</div>
+<div class="container table-container">
+  <h1 class="my-4 text-center">Danh sách các tài khoản</h1>
+  <a href="/users/new" class="btn btn-primary mb-4">Create New User</a>
+  <table class="table table-striped table-hover mx-auto">
+    <thead class="table-dark">
     <tr>
-      <th>User ID</th>
+      <th>ID</th>
+      <th>Username</th>
       <th>Email</th>
-      <th>Password</th>
-      <th>UserName</th>
-      <th>RoleName</th>
-      <th>Images</th>
-      <th>Action</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Role Name</th>
+      <th>Actions</th>
     </tr>
     </thead>
-    <tbody>
-    <tr th:each="user: ${users}">
-      <td th:text="${user.id}">User ID</td>
-      <td th:text="${user.email}">Email</td>
-      <td th:text="${user.password}">Password</td>
-      <td th:text="${user.username}">UserName</td>
+    <tbody id="userTableBody">
+    <tr th:each="user : ${users}" th:data-roles="${user.roles}">
+      <td th:text="${user.id}"></td>
+      <td th:text="${user.username}"></td>
+      <td th:text="${user.email}"></td>
+      <td th:text="${user.firstName}"></td>
+      <td th:text="${user.lastName}"></td>
       <td>
         <th:block th:each="role : ${user.roles}">
-          <button class="btn btn-primary" type="submit">
+          <button class="btn btn-primary btn-role" type="button">
             <span th:text="${role.name}"></span>
           </button>
         </th:block>
       </td>
-      <td><img
-              th:src="@{'/photos/' + ${user.id} + '/' + ${user.photourl}}"
-              style="width: 100px; height: 100px;" /></td>
-
       <td>
-        <div sec:authorize="hasAnyAuthority('EDITOR','ADMIN')">
-          <a th:href="@{'/users/edit/'+${user.id}}">Edit</a></div>
-        <div sec:authorize="hasAnyAuthority('EDITOR','ADMIN')">
-          <a th:href="@{'/users/delete/'+${user.id}}">Delete</a></div>
+        <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-warning">Edit</a>
+        <a th:href="@{/users/delete/{id}(id=${user.id})}" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
       </td>
-
     </tr>
     </tbody>
   </table>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var roleFilter = document.getElementById('roleFilter');
+    roleFilter.addEventListener('change', function () {
+      var selectedRole = this.value;
+      var rows = document.querySelectorAll('#userTableBody tr');
+      rows.forEach(function (row) {
+        var roles = row.getAttribute('data-roles');
+        if (selectedRole === 'ALL' || roles.includes(selectedRole)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
+<footer th:replace="layouts/footer.html :: footer"></footer>
 </body>
 </html>

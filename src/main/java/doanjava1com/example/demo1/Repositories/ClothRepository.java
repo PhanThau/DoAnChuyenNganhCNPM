@@ -20,6 +20,9 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
     void deleteBookById(long id);
     @Query("SELECT b FROM Cloth b WHERE CONCAT(b.title, ' ', ' ', b.category.name, ' ', b.price) LIKE %:keyword% AND b.isdeleted = false")
     public Page<Cloth> Search(Pageable page, @Param("keyword") String keyword);
+    @Modifying
+    @Query("DELETE FROM Cloth c WHERE c.category = :category")
+    void deleteByCategory(@Param("category") Category category);
 
     Page<Cloth> findByCategory(Category category, Pageable pageable);
 

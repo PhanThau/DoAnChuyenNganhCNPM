@@ -8,7 +8,6 @@
         body, html {
             height: 100%;
             margin: 0;
-            overflow: hidden; /* Ngăn chặn thanh cuộn */
         }
 
         .header {
@@ -42,6 +41,7 @@
     </style>
 </head>
 <body>
+
 <header th:insert="layouts/fragment.html :: header" class="header"></header>
 <div class="carousel-container">
     <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -63,28 +63,15 @@
             </div>
             <!-- Add more carousel items as needed -->
         </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
     </div>
-    <div class="carousel-item">
-        <img src="https://designercomvn.s3.ap-southeast-1.amazonaws.com/wp-content/uploads/2017/10/26015652/thiet-ke-banner-bong-da-chuyen-nghiep-soi-dong3.jpg" alt="First slide" class="d-block w-100">
-    </div>
-    <div class="carousel-item">
-        <img src="https://dongphucmientrung.vn/StoreData/PageData/526/ao-bong-da-da-nang-2.jpg" alt="Second slide" class="d-block w-100">
-    </div>
-    <div class="carousel-item">
-        <img src="https://vikisport.com/wp-content/uploads/2020/07/banner-mitre-1024.jpg" alt="Second slide" class="d-block w-100">
-    </div>
-    <!-- Thêm các ảnh khác như trên tương tự -->
-</div>
->>>>>>> 93a5fc6a161b262bce5f164bce224d612e23c4c5
-<button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-</button>
-<button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-</button>
-</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -92,10 +79,11 @@
     document.addEventListener("DOMContentLoaded", function() {
         // Lấy ra đối tượng carousel
         var myCarousel = new bootstrap.Carousel(document.getElementById('myCarousel'), {
-            interval: 2500, // Đặt thời gian chuyển động giữa các slide là 3000ms (3 giây)
+            interval: 2500, // Đặt thời gian chuyển động giữa các slide là 2500ms (2.5 giây)
             pause: "hover" // Tạm dừng chuyển động khi di chuột vào
         });
     });
 </script>
+<footer th:replace="layouts/footer.html :: footer"></footer>
 </body>
 </html>

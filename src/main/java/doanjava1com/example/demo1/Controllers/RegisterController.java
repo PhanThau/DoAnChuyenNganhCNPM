@@ -24,23 +24,41 @@ import java.io.UnsupportedEncodingException;
 
 @Controller
 public class RegisterController {
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private RoleService roleService;
+
     @Autowired
     private SendMailService sendMailService;
+
     @Autowired
     private UserService userService;
+
     @GetMapping("/register")
     public String showNewUser(Model model) {
-        User user =new User();
-        model.addAttribute("user",user);
-        model.addAttribute("roles",roleService.listAll());
-        return"home/register";
+        User user = new User();
+        model.addAttribute("user", user);
+        model.addAttribute("roles", roleService.listAll());
+        return "home/register";
     }
+
     @PostMapping("/process_register")
-    public String processRegister(User user, @RequestParam("image") MultipartFile multipartFile, HttpServletRequest request) throws UnsupportedEncodingException, MessagingException, Exception {
+    public String processRegister(User user, @RequestParam("image") MultipartFile multipartFile, HttpServletRequest request, Model model) throws UnsupportedEncodingException, MessagingException, Exception {
+        if (userService.findByUsername(user.getUsername()) != null) {
+            model.addAttribute("error", "Username already exists.");
+            return "home/register";
+        }
+        if (userService.findByEmail(user.getEmail()) != null) {
+            model.addAttribute("error", "Email already exists.");
+            return "home/register";
+        }
+
+
+
+
         String encodePassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodePassword);
         user.addRoles(roleService.getbyName("USER"));
@@ -63,13 +81,13 @@ public class RegisterController {
 
         return "auth/register_success";
     }
+
     @GetMapping("/verify")
     public String verifyUser(@Param("code") String code, Model model) {
         if (userService.verify(code)) {
             model.addAttribute("message", "Congratulations, your account has been verified.");
         } else {
-            model.addAttribute("error", "Sorry, we could not verify account. It maybe already verified,\n"
-                    + "        or verification code is incorrect.");
+            model.addAttribute("error", "Sorry, we could not verify account. It maybe already verified, or verification code is incorrect.");
         }
         return "auth/result_Verify_form";
     }

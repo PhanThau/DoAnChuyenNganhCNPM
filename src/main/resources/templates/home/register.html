@@ -9,7 +9,6 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            /*background: url('your-background-image.jpg') no-repeat center center fixed;*/
             background-size: cover;
         }
         .container {
@@ -79,26 +78,36 @@
         .register-button:hover {
             background-color: #79CDCD;
         }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <form class="form-register" th:action="@{/process_register}" th:object="${user}" method="post" enctype="multipart/form-data">
         <h2 class="register-quick">REGISTER QUICK</h2>
-        <input  placeholder="E-mail" class="form-control" type="text" th:field="*{email}"/>
-        <input class="form-control" type="password" th:field="*{password}" placeholder="Password" required />
-        <input class="form-control" type="password" id="confirm-password" placeholder="Confirm Password" required />
 
-        <input class="form-control" type="text" th:field="*{username}" placeholder="Username"/>
-        <input class="form-control" type="file" name ="image" accept ="image/png,image/jpeg"/>
+        <div th:if="${error}" class="error-message" th:text="${error}"></div>
+
+        <input placeholder="First Name" class="form-control" type="text" th:field="*{firstName}" required />
+        <input placeholder="Last Name" class="form-control" type="text" th:field="*{lastName}" required />
+        <input placeholder="E-mail" class="form-control" type="email" th:field="*{email}" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$" title="Please enter a valid email address"/>
+        <input placeholder="Phone Number" class="form-control" type="text" th:field="*{phoneNumber}" required pattern="^\d{10}$" title="Phone number must be 10 digits"/>
+        <input placeholder="Address" class="form-control" type="text" th:field="*{address}" required />
+        <input class="form-control" type="password" id="password" th:field="*{password}" placeholder="Password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{10,}" title="Password must be at least 10 characters long, contain a number, an uppercase letter, a lowercase letter, and a special character"/>
+        <input class="form-control" type="password" id="confirm-password" placeholder="Confirm Password" required />
+        <input class="form-control" type="text" th:field="*{username}" placeholder="Username" required />
+        <input class="form-control" type="file" name="image" accept="image/png,image/jpeg" />
+
         <label for="show-password-checkbox">
             <input type="checkbox" id="show-password-checkbox"> Show Password
         </label>
         <button class="btn btn-lg btn-block" type="submit">Register</button>
     </form>
 </div>
-</body>
-</html>
 <script>
     const passwordField = document.getElementById("password");
     const confirmPasswordField = document.getElementById("confirm-password");
@@ -123,6 +132,34 @@
         if (password !== confirmPassword) {
             alert("Passwords do not match. Please try again.");
             event.preventDefault(); // Ngăn chặn việc gửi biểu mẫu nếu mật khẩu không khớp
+            return;
+        }
+
+        const emailField = document.querySelector("input[th\\:field='*{email}']");
+        const phoneField = document.querySelector("input[th\\:field='*{phoneNumber}']");
+        const emailPattern = new RegExp(emailField.getAttribute("pattern"));
+        const phonePattern = new RegExp(phoneField.getAttribute("pattern"));
+
+        if (!emailPattern.test(emailField.value)) {
+            alert("Invalid email format.");
+            event.preventDefault();
+            return;
+        }
+
+        if (!phonePattern.test(phoneField.value)) {
+            alert("Phone number must be 10 digits.");
+            event.preventDefault();
+            return;
+        }
+
+        const passwordPattern = new RegExp(passwordField.getAttribute("pattern"));
+
+        if (!passwordPattern.test(passwordField.value)) {
+            alert("Password must be at least 10 characters long, contain a number, an uppercase letter, a lowercase letter, and a special character.");
+            event.preventDefault();
+            return;
         }
     });
 </script>
+</body>
+</html>

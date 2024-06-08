@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import doanjava1com.example.demo1.Repositories.ClothRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,9 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ClothRepository clothRepository;
+
     public List<Category> listAll() {
         return categoryRepository.findAll();
     }
@@ -23,10 +27,18 @@ public class CategoryService {
     public void save(Category category) {
         categoryRepository.save(category);
     }
+
     public Category get(long id) {
-        return categoryRepository.findById(id).get();
+        return categoryRepository.findById(id).orElse(null);
     }
+
     public void delete(long id) {
-        categoryRepository.deleteById(id);
+        // Xóa tất cả sản phẩm thuộc loại này trước khi xóa loại sản phẩm
+        Category category = get(id);
+        if (category != null) {
+            clothRepository.deleteByCategory(category);
+            categoryRepository.deleteById(id);
+        }
     }
 }
+

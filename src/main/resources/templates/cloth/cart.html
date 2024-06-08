@@ -20,15 +20,19 @@
 </head>
 <body>
 <header th:insert="layouts/fragment.html :: header"></header>
+<div class="separator-line" style="border-top: 1px solid #ddd;
+            margin-top: 20px;
+            margin-bottom: 20px;">
+</div>
 <div class="container" th:if="${not #lists.isEmpty(cart.cartItems)}">
     <table class="table">
         <thead>
         <tr>
-            <th scope="col">Cloth ID</th>
-            <th scope="col">Cloth Name</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Price</th>
-            <th scope="col">Total</th>
+            <th scope="col">Mã Sản phẩm</th>
+            <th scope="col">Tên sản phẩm</th>
+            <th scope="col">Số lượng</th>
+            <th scope="col">Giá</th>
+            <th scope="col">Tổng</th>
             <th scope="col">Action</th>
         </tr>
         </thead>
@@ -45,7 +49,7 @@
                 </label>
             </td>
             <td class="price" th:text="${item.getPrice()}"></td>
-            <td th:text="${item.getPrice()* item.getQuantity()}"></td>
+            <td class="item-total" th:text="${item.getPrice() * item.getQuantity()}"></td>
             <td>
                 <a class="btn btn-danger"
                    th:href="@{/cart/removeFromCart/{id}(id=${item.getClothId()})}">
@@ -77,6 +81,10 @@
         </div>
     </div>
 </div>
+<div class="separator-line" style="border-top: 1px solid #ddd;
+            margin-top: 20px;
+            margin-bottom: 20px;">
+</div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // Function to update total price
@@ -84,12 +92,15 @@
         var total = 0;
         var quantityInputs = document.getElementsByClassName("quantity");
         var prices = document.getElementsByClassName("price");
+        var itemTotals = document.getElementsByClassName("item-total");
 
         for (var i = 0; i < quantityInputs.length; i++) {
             var quantity = parseInt(quantityInputs[i].value);
             var price = parseFloat(prices[i].textContent);
+            var itemTotal = quantity * price;
 
-            total += quantity * price;
+            itemTotals[i].textContent = itemTotal.toFixed(2);
+            total += itemTotal;
         }
 
         document.getElementById("cartTotal").textContent = total.toFixed(2);
@@ -120,4 +131,5 @@
     });
 </script>
 </body>
+<footer th:replace="layouts/footer.html :: footer"></footer>
 </html>

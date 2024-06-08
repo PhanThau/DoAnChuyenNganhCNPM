@@ -9,38 +9,42 @@ public class Cloth {
     @Column(name = "cloth_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "title",nullable = false,length = 255)
+
+    @Column(name = "title", nullable = false, length = 255)
     private String title;
+
     @Column(name = "price")
     private Long price;
-    @Column(name="isdeleted",columnDefinition = "boolean default false")
+
+    @Column(name = "quantity")
+    private int quantity;
+
+    @Column(name="isdeleted", columnDefinition = "boolean default false")
     private boolean isdeleted;
-    public boolean isIsdeleted() {
-        return isdeleted;
-    }
-    public void setIsdeleted(boolean isdeleted) {
-        this.isdeleted = isdeleted;
-    }
+
     @ManyToOne
-    @JoinColumn(name = "category_id",nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
     @Column(nullable = true, length = 255)
     private String photourl;
 
-    public Long getId() {
-        return id;
-    }
-
     public Cloth() {
         super();
-        // TODO Auto-generated constructor stub
     }
-    public Cloth(Long id, String title, Long price, Category category) {
+
+    public Cloth(Long id, String title, Long price, int quantity, Category category) {
         super();
         this.id = id;
         this.title = title;
         this.price = price;
+        this.quantity = quantity;
         this.category = category;
+        this.isdeleted = quantity == 0;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public void setId(Long id) {
@@ -63,6 +67,27 @@ public class Cloth {
         this.price = price;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+        if (this.quantity == 0) {
+            this.isdeleted = true;
+        } else {
+            this.isdeleted = false;
+        }
+    }
+
+    public boolean isIsdeleted() {
+        return isdeleted;
+    }
+
+    public void setIsdeleted(boolean isdeleted) {
+        this.isdeleted = isdeleted;
+    }
+
     public Category getCategory() {
         return category;
     }
@@ -78,7 +103,5 @@ public class Cloth {
     public void setPhotourl(String photourl) {
         this.photourl = photourl;
     }
-
-
-
 }
+

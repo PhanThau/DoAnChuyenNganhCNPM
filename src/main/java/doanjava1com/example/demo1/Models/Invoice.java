@@ -1,14 +1,13 @@
 package doanjava1com.example.demo1.Models;
 
 import lombok.*;
-
 import org.hibernate.Hibernate;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+
 @Getter
 @Setter
 @ToString
@@ -37,6 +36,15 @@ public class Invoice {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     @ToString.Exclude
     private User user;
+
+    @Column(name = "status")
+    private String status;  // Thêm thuộc tính status
+
+    public enum Status {
+        PENDING,
+        SHIPPING,
+        DELIVERED
+    }
 
     public Long getId() {
         return id;
@@ -76,6 +84,14 @@ public class Invoice {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override

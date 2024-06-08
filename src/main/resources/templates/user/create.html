@@ -10,38 +10,52 @@
 </head>
 <body>
 <header th:insert="layouts/fragment.html :: header"></header>
-<div align="center" class="container">
-  <h1>Create New User</h1><br/>
-  <form th:action="@{/users/save}" th:object="${user}" method="post" enctype="multipart/form-data">
-    <div class="col-6 mb-3">
-      <label class="col-sm-2 col-form-label">Email: </label>
-      <input class="form-control" type="text" th:field="*{email}"/>
-    </div>
-    <div class="col-6 mb-3">
-      <label class="col-sm-2 col-form-label">Password: </label>
-      <input class="form-control" type="password" th:field="*{password}"/>
-    </div>
-    <div class="col-6 mb-3">
-      <label class="col-sm-2 col-form-label">UserName : </label>
-      <input class="form-control" type="text" th:field="*{username}"/>
-    </div>
-
-    <div class="col-6 mb-3">
-      <label class="col-sm-2 col-form-label">Photos : </label>
-      <input class="form-control" type="file" name ="image" accept ="image/png,image/jpeg"/>
-    </div>
-
-    <div class="col-6 mb-3">
-      <label class="col-sm-2 col-form-label">Roles:</label>
-      <div th:each="role : ${roles}">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" th:field="*{roles}" th:value="${role.id}" id="role-check-[[${role.id}]]"/>
-          <label class="form-check-label" for="role-check-[[${role.id}]]" th:text="${role.name}"></label>
-        </div>
-      </div>
-    </div>
+<form th:action="@{/users/save}" th:object="${user}" method="post" enctype="multipart/form-data" class="container mt-5">
+  <div th:if="${error}" class="alert alert-danger" role="alert">
+    <p th:text="${error}"></p>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Username:</label>
+    <input type="text" th:field="*{username}" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Email:</label>
+    <input type="email" th:field="*{email}" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Password:</label>
+    <input type="password" th:field="*{password}" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">First Name:</label>
+    <input type="text" th:field="*{firstName}" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Last Name:</label>
+    <input type="text" th:field="*{lastName}" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Phone Number:</label>
+    <input type="text" th:field="*{phoneNumber}" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Address:</label>
+    <input type="text" th:field="*{address}" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Profile Image:</label>
+    <input type="file" name="image" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Roles:</label>
+    <select th:field="*{roles}" multiple class="form-control">
+      <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
+    </select>
+  </div>
+  <div>
     <button type="submit" class="btn btn-primary">Save</button>
-  </form>
-</div>
+  </div>
+</form>
+<a href="/users" class="btn btn-secondary mt-3">Back to List</a>
 </body>
 </html>
